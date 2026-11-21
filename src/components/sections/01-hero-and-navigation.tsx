@@ -274,9 +274,9 @@ export default function Section01HeroAndNavigation() {
       </AnimatePresence>
 
       <header ref={headerRef} id="home" className="page-section bg-[var(--surface-inverse)] flex flex-col gap-0 items-center overflow-clip pb-[var(--space-0)] pt-[var(--space-32)] px-[var(--space-162)] relative rounded-bl-none rounded-br-none size-full" data-node-id="5:627" data-name="Section 01 · Hero and navigation">
-        <div className="absolute bg-[var(--surface-inverse-variant-02)] blur-[calc(var(--effect-radius-44-700001)/2)] bottom-0 left-[-9px] top-[100px] w-[1508px]" data-node-id="5:628" data-name="Gradient Lab 001 1" />
+        <div className="absolute bg-[var(--surface-inverse-variant-02)] blur-[calc(var(--effect-radius-44-700001)/2)] bottom-0 inset-x-[-10px] top-[100px]" data-node-id="5:628" data-name="Gradient Lab 001 1" />
         <motion.div
-          className="hero-gradient absolute h-[max(1316px,calc(100%+520px))] top-[-501px] w-[1969px]"
+          className="hero-gradient absolute h-[max(1316px,calc(100%+520px))] top-[-501px]"
           data-node-id="5:629"
           aria-hidden="true"
           style={
@@ -347,7 +347,7 @@ export default function Section01HeroAndNavigation() {
             }
             className="hero-preview-frame mx-auto flex justify-center"
           >
-            <ScaledPreview width={1008} maxWidth={1116} label="Time tracker dashboard">
+            <ScaledPreview width={1008} maxWidth={1560} label="Time tracker dashboard">
               <HeroAnimatedDashboard />
             </ScaledPreview>
           </motion.div>
