@@ -129,7 +129,7 @@ summary {
 }
 .hero-preview-frame {
   margin-top: 0;
-  width: min(100%, 1116px);
+  width: min(100%, 980px, calc((100svh - 310px) * 1008 / 544));
 }
 @media (min-width: 1520px) {
   #home {
