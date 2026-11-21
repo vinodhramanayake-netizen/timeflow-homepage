@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Timeflow – animated UI</title>
+<style>
+:root{--bg:#ECEAF3;--ink:#1B1535;--muted:#6B6785;--pri:#6246E5;--lav:#F1EEFD;--lime:#C9F26B;--line:#E4E1EF;--side:#F6F4FB;--card:#fff;--green:#1E7A55;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14121F}}
+:root[data-theme="dark"]{--bg:#14121F}
+*{box-sizing:border-box}
+html{height:100%}
+body{margin:0;min-height:100%;background:var(--bg);font-family:"Plus Jakarta Sans","Inter",system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:12px;color:var(--ink)}
+#wrap{width:100%;max-width:1008px;aspect-ratio:1008/544;position:relative}
+#stage{position:absolute;left:0;top:0;width:1008px;height:544px;transform-origin:0 0;background:#fff;border-radius:18px 18px 0 0;overflow:hidden;box-shadow:0 10px 40px rgba(40,30,90,.18)}
+.abs{position:absolute}
+#app{position:absolute;inset:0;opacity:0;transform:scale(.97);transition:opacity .9s ease,transform .9s cubic-bezier(.2,.8,.2,1)}
+#app.on{opacity:1;transform:none}
+#side{left:0;top:0;width:174px;height:544px;background:var(--side)}
+.logo-s{position:absolute;left:16px;top:22px;font-weight:800;font-size:22px;letter-spacing:-1px}
+.logo-s i,.logo i{font-style:normal;color:var(--pri)}
+.nav{position:absolute;left:16px;width:142px;height:36px;border-radius:8px;padding:0 12px;display:flex;align-items:center;font-size:12.5px;color:var(--muted)}
+.nav.act{background:var(--pri);color:#fff;font-weight:600}
+.tiny{font-size:9px;letter-spacing:.4px;color:var(--muted)}
+#trial{left:16px;top:357px;width:142px;height:89px;background:#E9E4FB;border-radius:10px;overflow:hidden;font-size:11px;font-weight:600;white-space:nowrap}
+#trial b{position:absolute;left:12px;top:12px;font-weight:600}
+#trial small{position:absolute;left:12px;top:33px;font-weight:400;font-size:9px;color:var(--muted)}
+#trial .btn{position:absolute;left:12px;top:52px;height:25px;white-space:nowrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;height:25px;padding:0 10px;border-radius:7px;font-size:11.5px;font-weight:600;white-space:nowrap}
+.lime{background:var(--lime);color:var(--ink)}
+.pri{background:var(--pri);color:#fff}
+#main{left:174px;top:0;width:834px;height:544px}
+h1{position:absolute;left:24px;top:22px;margin:0;font-size:23px;font-weight:700;letter-spacing:-.5px}
+.sub{position:absolute;left:24px;top:56px;font-size:10px;color:var(--muted)}
+#panel{left:24px;top:82px;width:786px;height:104px;background:var(--lav);border-radius:14px}
+#ttl{left:20px;top:14px;font-size:16px;font-weight:600}
+#ttls{left:20px;top:40px;font-size:10.5px;color:var(--muted)}
+#sel{left:20px;top:60px;width:186px;height:30px;border:1.5px solid var(--pri);border-radius:8px;background:#fff;padding:0 15px;display:flex;align-items:center;justify-content:space-between;font-size:12.5px;transition:box-shadow .25s}
+#sel.open{box-shadow:0 0 0 4px rgba(98,70,229,.18)}
+#sel svg{transition:transform .25s}#sel.open svg{transform:rotate(180deg)}
+#time{left:382px;top:25px;font-size:35px;font-weight:600;letter-spacing:-.5px;font-variant-numeric:tabular-nums;transition:left .5s}
+#tsub{left:382px;top:68px;font-size:9.5px;color:var(--muted);transition:left .5s}
+#ctl{right:20px;top:39px;display:flex;gap:8px}
+#start{background:#E1ECC0;color:#9AAA72;transition:all .3s}
+#start.rdy{background:var(--lime);color:var(--ink)}
+#run{display:none;gap:8px}
+#run .btn.stop{background:#fff;border:1px solid var(--line)}
+.dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);margin-right:6px;animation:pulse 1.2s infinite}
+@keyframes pulse{50%{opacity:.25}}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;height:64px;top:204px;width:254px}
+.card .l{position:absolute;left:15px;top:11px;font-size:10px;color:var(--muted)}
+.card .v{position:absolute;left:15px;top:26px;font-size:20px;font-weight:600;letter-spacing:-.5px}
+.card .n{position:absolute;right:14px;top:26px;font-size:8px;color:var(--muted)}
+#act{left:24px;top:286px;width:786px;height:234px;background:#fff;border:1px solid var(--line);border-radius:14px}
+#act b.h{position:absolute;left:17px;top:14px;font-size:13.5px}
+#tot{position:absolute;right:17px;top:16px;font-size:10px;color:var(--muted)}
+#empty{position:absolute;left:0;right:0;top:100px;text-align:center;font-size:10px;color:var(--muted);transition:opacity .3s}
+#empty b{display:block;font-size:12.5px;color:var(--ink);margin-bottom:7px}
+#tbl{position:absolute;left:17px;right:17px;top:41px;opacity:0;transition:opacity .3s}
+#tbl .th{position:relative;height:18px;font-size:8px;letter-spacing:.5px;color:var(--muted)}
+#tbl .th span,#row span{position:absolute}
+#row{position:relative;height:37px;margin-top:8px;background:var(--lav);border-radius:6px;transform:translateY(-14px);opacity:0;transition:all .55s cubic-bezier(.2,.8,.2,1)}
+#row.on{transform:none;opacity:1}
+#foot{position:absolute;left:17px;right:17px;bottom:14px;font-size:8.5px;color:var(--muted);display:flex;justify-content:space-between}
+#foot a{color:var(--pri)}
+#menu{left:218px;top:178px;width:260px;height:202px;background:#fff;border-radius:10px;box-shadow:0 12px 34px rgba(40,30,90,.2);padding:9px;opacity:0;transform:translateY(-8px) scale(.97);transform-origin:top left;pointer-events:none;transition:all .28s cubic-bezier(.2,.8,.2,1);z-index:5}
+#menu.on{opacity:1;transform:none}
+#menu .s{height:30px;border:1px solid var(--line);border-radius:7px;font-size:11px;color:var(--muted);padding:8px 11px}
+#menu .g{font-size:8px;letter-spacing:.5px;color:var(--muted);margin:8px 0 4px}
+.opt{height:40px;border-radius:6px;padding:5px 10px;font-size:12.5px;line-height:1.25;margin-bottom:6px;transition:background .2s,color .2s}
+.opt small{display:block;font-size:8.5px;color:var(--muted)}
+.opt.hov{background:var(--lav);color:var(--pri)}
+#intro{position:absolute;inset:0;background:#fff;z-index:8;transition:opacity .9s ease;display:flex;align-items:center;justify-content:center}
+#intro.off{opacity:0;pointer-events:none}
+.logo{display:flex;font-weight:800;font-size:96px;letter-spacing:-4px;line-height:1;transition:transform .9s cubic-bezier(.5,0,.2,1),opacity .9s}
+.logo.out{transform:scale(1.25);opacity:0}
+.logo svg{display:block;overflow:visible}.logo .p{transform-box:fill-box;transform-origin:center;opacity:0;transform:rotate(-260deg) translate(-90px,70px) scale(.1);filter:blur(14px);animation:sw 1.15s cubic-bezier(.2,.85,.25,1) forwards;animation-delay:calc(var(--i)*80ms)}
+@keyframes sw{60%{filter:blur(2px)}to{opacity:1;transform:none;filter:blur(0)}}
+.ring{position:absolute;width:520px;height:520px;border-radius:50%;background:conic-gradient(from 0deg,transparent,rgba(98,70,229,.22),transparent 55%);filter:blur(18px);opacity:0;animation:ring 1.5s ease-out forwards}
+@keyframes ring{0%{opacity:0;transform:rotate(-180deg) scale(.3)}40%{opacity:1}100%{opacity:0;transform:rotate(180deg) scale(1.3)}}
+#cur{position:absolute;left:0;top:0;z-index:20;width:30px;height:30px;opacity:0;transform:translate(100px,40px);transition:transform .9s cubic-bezier(.5,0,.2,1),opacity .35s;pointer-events:none;filter:drop-shadow(0 3px 5px rgba(40,30,90,.3))}
+#cur svg{display:block;transition:transform .12s}
+#cur.dn svg{transform:scale(.8)}
+.rip{position:absolute;z-index:19;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;border:2px solid var(--pri);opacity:0;pointer-events:none}
+.rip.go{animation:rp .6s ease-out}
+@keyframes rp{0%{opacity:.9;transform:scale(.4)}100%{opacity:0;transform:scale(4)}}
+#re{font:600 12px inherit;font-family:inherit;border:1px solid var(--line);background:transparent;color:var(--ink);padding:7px 16px;border-radius:20px;cursor:pointer}
+@media (prefers-reduced-motion:reduce){.logo .p{animation-duration:.01s}}
+</style>
+</head>
+<body>
+<div id="wrap"><div id="stage">
+  <div id="app">
+    <div id="side" class="abs">
+      <div class="logo-s" id="logoS"></div>
+      <div class="abs tiny" style="left:16px;top:67px;font-size:8px">WORKSPACE</div>
+      <div class="abs" style="left:16px;top:82px;font-size:12px;font-weight:600">Studio workspace</div>
+      <div class="nav act" style="top:121px">Time tracker</div>
+      <div class="nav" style="top:165px">Timesheet</div><div class="nav" style="top:209px">Projects</div>
+      <div class="nav" style="top:253px">Team</div><div class="nav" style="top:297px">Reports</div>
+      <div id="trial" class="abs"><b>Make every hour count</b><small>Your trial has 23 days left</small><span class="btn lime">Explore plans</span></div>
+      <div class="abs" style="left:16px;top:469px;font-size:10.5px;color:var(--muted)">Workspace settings</div>
+    </div>
+    <div id="main" class="abs">
+      <h1>Time tracker</h1><div class="sub">A little focus. A lot of progress.</div>
+      <div class="abs" style="right:24px;top:32px;display:flex;gap:10px;align-items:center"><span style="font-size:10.5px;font-weight:600">This week ⌄</span><span class="btn pri">+ Manual entry</span></div>
+      <div id="panel" class="abs">
+        <div id="ttl" class="abs">What are you working on?</div>
+        <div id="ttls" class="abs">Choose a project to get started</div>
+        <div id="sel" class="abs"><span id="selt">Select Your Project</span><svg width="10" height="6" viewBox="0 0 10 6" fill="none" stroke="#1B1535" stroke-width="1.6"><path d="M1 1l4 4 4-4"/></svg></div>
+        <div id="time" class="abs">00:00:00</div>
+        <div id="tsub" class="abs">Ready when you are</div>
+        <div id="ctl" class="abs"><span id="start" class="btn">Start timer</span><span id="run"><span class="btn lime">Pause</span><span class="btn stop">Stop</span></span></div>
+      </div>
+      <div class="card abs" style="left:24px"><span class="l">Today</span><span class="v" id="v1">0h 00m</span><span class="n" id="n1">No entries yet</span></div>
+      <div class="card abs" style="left:290px"><span class="l">This week</span><span class="v" id="v2">0h 00m</span><span class="n" id="n2">No active projects</span></div>
+      <div class="card abs" style="left:556px"><span class="l">Billable time</span><span class="v" id="v3">0h 00m</span><span class="n" id="n3">No billable time</span></div>
+      <div id="act" class="abs">
+        <b class="h">Today’s activity</b><span id="tot">Today’s total &nbsp; 0h 00m</span>
+        <div id="empty"><b>No activity yet</b>Start your first timer and your activity will appear here.</div>
+        <div id="tbl"><div class="th"><span style="left:8px;top:4px">TASK / PROJECT</span><span style="left:276px;top:4px">BILLING</span><span style="left:402px;top:4px">TIME</span><span style="left:606px;top:4px">DURATION</span></div>
+          <div id="row"><span style="left:8px;top:5px;font-size:12px;font-weight:600">Untitled activity<br><em style="font-style:normal;font-weight:400;font-size:9px;color:var(--muted)">Website redesign</em></span>
+            <span class="btn" style="left:276px;top:6px;background:#E3DCFB;color:var(--pri)">Billable</span>
+            <span style="left:402px;top:12px;font-size:10.5px;color:var(--muted)">09:30 – Running</span><span id="dur" style="left:606px;top:11px;font-size:12px;font-weight:700">0s</span></div></div>
+        <div id="foot"><span id="fs">Ready for your first activity</span><a>View timesheet →</a></div>
+      </div>
+    </div>
+    <div id="menu" class="abs"><div class="s">Search projects…</div><div class="g">STUDIO WORKSPACE</div>
+      <div class="opt" id="o1">Website redesign<small>Billable</small></div><div class="opt">Mobile app<small>Billable</small></div><div class="opt">Internal projects<small>Non-billable</small></div></div>
+  </div>
+  <div id="intro"><div class="ring"></div><div class="logo" id="logo"></div></div>
+  <div id="cur"><svg width="30" height="30" viewBox="0 0 30 30"><path d="M3 13L27 3 17 27l-3-10z" fill="#5B4CE6" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/></svg></div>
+  <div class="rip" id="rip"></div>
+</div></div>
+<button id="re">↻ Replay</button>
+<script>
+const $=id=>document.getElementById(id),sl=ms=>new Promise(r=>setTimeout(r,ms));
+const LG=[[0,21.31,'#0B0B0F','M 24.296 71.700 C 19.509 71.700 15.621 70.387 12.634 67.759 C 9.682 65.096 8.207 60.776 8.207 54.801 L 8.207 0 L 22.460 0 L 22.460 53.397 C 22.460 55.917 22.946 57.663 23.918 58.635 C 24.926 59.570 26.330 60.038 28.129 60.038 C 29.101 60.038 29.983 59.966 30.775 59.822 C 31.603 59.678 32.521 59.462 33.529 59.174 C 34.536 58.851 35.040 58.689 35.040 58.689 L 35.040 69.595 C 35.040 69.595 34.392 69.811 33.097 70.243 C 31.837 70.675 30.433 71.017 28.885 71.269 C 27.374 71.556 25.844 71.700 24.296 71.700 Z M 0 25.538 L 0 13.768 L 35.148 13.768 L 35.148 25.538 L 0 25.538 Z'],[48.48,13.59,'#4F46E5','M 1.512 79.313 L 1.512 22.460 L 15.711 22.460 L 15.711 79.313 L 1.512 79.313 Z M 8.585 17.061 C 6.209 17.061 4.175 16.215 2.484 14.524 C 0.828 12.832 0 10.798 0 8.423 C 0 6.047 0.846 4.049 2.538 2.430 C 4.229 0.810 6.245 0 8.585 0 C 11.104 0 13.174 0.810 14.794 2.430 C 16.449 4.049 17.277 6.047 17.277 8.423 C 17.277 10.834 16.449 12.886 14.794 14.578 C 13.174 16.233 11.104 17.061 8.585 17.061 Z M 33.299 67.513 C 31.393 68.673 28.907 68.069 27.747 66.164 L 6.257 30.883 C 5.097 28.978 5.700 26.492 7.606 25.331 L 10.651 23.506 C 12.557 22.346 15.918 21.601 17.079 23.506 L 39.017 59.299 C 40.178 61.205 39.574 63.690 37.668 64.851 L 33.299 67.513 Z'],[96.50,14.52,'#0B0B0F','M 0 78.395 L 0 21.543 L 13.876 21.543 L 13.876 31.693 L 12.418 29.857 L 13.876 29.857 C 15.603 27.014 17.979 24.746 21.003 23.054 C 24.026 21.327 27.590 20.463 31.693 20.463 C 35.724 20.463 39.342 21.525 42.545 23.648 C 45.749 25.736 47.854 28.381 48.862 31.585 C 51.130 27.878 53.883 25.106 57.123 23.270 C 60.362 21.399 63.980 20.463 67.975 20.463 C 73.914 20.463 78.629 22.334 82.121 26.078 C 85.648 29.785 87.412 34.644 87.412 40.655 L 87.412 78.395 L 73.212 78.395 L 73.212 45.083 C 73.212 41.303 72.330 38.352 70.567 36.228 C 68.839 34.105 66.409 33.043 63.278 33.043 C 60.002 33.043 57.105 34.284 54.585 36.768 C 52.066 39.216 50.806 42.491 50.806 46.594 L 50.806 78.395 L 36.606 78.395 L 36.606 45.137 C 36.606 41.465 35.742 38.532 34.015 36.336 C 32.287 34.141 29.821 33.043 26.618 33.043 C 23.306 33.043 20.409 34.284 17.925 36.768 C 15.478 39.252 14.254 42.509 14.254 46.541 L 14.254 78.395 Z'],[96.50,14.52,'#0B0B0F','M 124.688 79.475 C 116.157 79.475 108.976 76.686 103.145 71.107 C 97.350 65.527 94.453 58.473 94.453 49.942 C 94.453 41.411 97.332 34.374 103.091 28.831 C 108.886 23.252 115.941 20.463 124.256 20.463 C 132.787 20.463 139.643 23.108 144.827 28.399 C 150.046 33.655 152.655 40.314 152.655 48.376 L 152.655 53.559 L 101.580 53.559 L 101.580 45.029 L 139.805 45.029 C 139.517 41.357 137.988 38.298 135.216 35.850 C 132.445 33.403 128.845 32.179 124.418 32.179 C 119.775 32.179 115.761 33.871 112.378 37.254 C 109.030 40.637 107.357 44.975 107.357 50.266 C 107.357 55.629 109.120 59.966 112.648 63.278 C 116.175 66.553 120.261 68.191 124.904 68.191 C 127.315 68.191 129.457 67.849 131.329 67.165 C 133.200 66.481 134.892 65.473 136.404 64.142 C 137.952 62.810 139.481 60.866 140.993 58.311 L 151.414 63.278 C 149.254 67.309 146.950 70.441 144.503 72.672 C 142.055 74.904 139.230 76.596 136.026 77.747 C 132.859 78.899 129.079 79.475 124.688 79.475 Z'],[96.50,14.52,'#0B0B0F','M 153.247 34.069 L 153.247 22.244 L 188.665 22.244 L 188.665 34.069 L 153.247 34.069 Z M 162.101 78.395 L 162.101 17.871 C 162.101 12.400 163.559 8.063 166.475 4.859 C 169.426 1.620 173.529 0 178.785 0 C 180.080 0 181.466 0.126 182.942 0.378 C 184.454 0.594 185.947 0.954 187.423 1.458 C 188.935 1.962 189.691 2.214 189.691 2.214 L 189.691 12.796 C 189.691 12.796 189.223 12.652 188.287 12.364 C 187.351 12.040 186.397 11.806 185.426 11.662 C 184.490 11.482 183.590 11.392 182.726 11.392 C 180.710 11.392 179.145 11.986 178.029 13.174 C 176.913 14.326 176.355 16.143 176.355 18.627 L 176.355 78.395 L 162.101 78.395 Z'],[298.61,0,'#0B0B0F','M 0 77.316 L 0 0 L 14.254 0 L 14.254 77.316 L 0 77.316 Z'],[324.31,14.69,'#0B0B0F','M 29.803 59.012 C 21.309 59.012 14.218 56.151 8.531 50.428 C 2.844 44.669 0 37.686 0 29.479 C 0 21.309 2.844 14.362 8.531 8.639 C 14.218 2.880 21.309 0 29.803 0 C 38.262 0 45.353 2.880 51.076 8.639 C 56.799 14.362 59.660 21.309 59.660 29.479 C 59.660 37.686 56.799 44.669 51.076 50.428 C 45.353 56.151 38.262 59.012 29.803 59.012 Z M 29.803 45.785 C 34.194 45.785 37.992 44.237 41.195 41.141 C 44.399 38.010 46.001 34.123 46.001 29.479 C 46.001 24.836 44.399 20.967 41.195 17.871 C 37.992 14.776 34.194 13.228 29.803 13.228 C 25.412 13.228 21.633 14.776 18.465 17.871 C 15.298 20.967 13.714 24.836 13.714 29.479 C 13.714 34.123 15.298 38.010 18.465 41.141 C 21.633 44.237 25.412 45.785 29.803 45.785 Z'],[389.69,33.79,'#0B0B0F','M 19.545 57.285 L 0 0 L 14.578 0 L 25.106 35.418 L 26.348 39.846 L 27.590 35.526 L 37.740 0 L 50.266 0 L 60.470 35.364 L 61.658 39.522 L 62.846 35.418 L 73.428 0 L 86.926 0 L 67.165 57.285 L 55.395 57.285 L 44.489 22.676 L 43.355 18.735 L 42.221 22.676 L 31.477 57.285 L 19.545 57.285 Z']];
+function logoSVG(w,anim){return `<svg width="${w}" viewBox="0 0 476.62 94" ${anim?'':'style="display:block;margin-top:2px"'}>`+LG.map((p,i)=>`<g transform="translate(${p[0]},${p[1]})"><g class="${anim?'p':''}" style="--i:${i}"><path fill="${p[2]}" d="${p[3]}"/></g></g>`).join('')+'</svg>'}
+$('logoS').innerHTML=logoSVG(94,false);
+const stage=$('stage'),wrap=$('wrap');
+function fit(){stage.style.transform='scale('+wrap.clientWidth/1008+')'}
+addEventListener('resize',fit);fit();
+const cur=$('cur'),rip=$('rip');let tick=null,run=0;
+function mv(x,y,ms){cur.style.transitionDuration=ms+'ms';cur.style.transform=`translate(${x}px,${y}px)`;return sl(ms)}
+async function click(x,y){cur.classList.add('dn');rip.style.left=x+'px';rip.style.top=y+'px';rip.classList.remove('go');void rip.offsetWidth;rip.classList.add('go');await sl(130);cur.classList.remove('dn')}
+function fmt(s){return '00:00:'+String(s).padStart(2,'0')}
+function reset(){
+  clearInterval(tick);
+  $('app').classList.remove('on');$('intro').classList.remove('off');
+  const lg=$('logo');lg.className='logo';
+  lg.innerHTML=logoSVG(476,true);
+  const r=document.querySelector('.ring');r.style.animation='none';void r.offsetWidth;r.style.animation='';
+  cur.style.transition='none';cur.style.opacity=0;cur.style.transform='translate(100px,40px)';void cur.offsetWidth;
+  $('menu').classList.remove('on');$('sel').classList.remove('open');$('selt').textContent='Select Your Project';
+  $('ttl').textContent='What are you working on?';$('ttls').textContent='Choose a project to get started';
+  $('time').textContent='00:00:00';$('time').style.left='382px';$('tsub').style.left='382px';$('tsub').innerHTML='Ready when you are';
+  $('start').style.display='';$('start').className='btn';$('run').style.display='none';
+  ['1','2','3'].forEach(i=>{$('v'+i).textContent='0h 00m'});
+  $('n1').textContent='No entries yet';$('n2').textContent='No active projects';$('n3').textContent='No billable time';
+  $('tot').innerHTML='Today’s total &nbsp; 0h 00m';$('empty').style.opacity=1;$('tbl').style.opacity=0;$('row').classList.remove('on');
+  $('dur').textContent='0s';$('fs').textContent='Ready for your first activity';$('o1').classList.remove('hov');
+}
+async function play(){
+  const me=++run;reset();const ok=()=>me===run;
+  await sl(60);cur.style.transition='';
+  await sl(850);if(!ok())return;
+  cur.style.opacity=1;                                   // cursor appears as logo settles
+  await mv(480,262,950);if(!ok())return;                 // glides to the logo
+  await click(504,272);if(!ok())return;                  // click
+  $('logo').classList.add('out');$('intro').classList.add('off');$('app').classList.add('on'); // UI in (~0.9s)
+  await mv(300,165,1000);if(!ok())return;               // → project selector (total ≈3s from click-ish)
+  await click(311,157);$('sel').classList.add('open');$('menu').classList.add('on');
+  await sl(550);if(!ok())return;
+  await mv(330,262,650);$('o1').classList.add('hov');await sl(250);if(!ok())return;
+  await click(349,259);
+  $('selt').textContent='Website redesign';$('menu').classList.remove('on');$('sel').classList.remove('open');
+  $('ttls').textContent='Ready to track your time';$('tsub').textContent='Ready to start';$('start').classList.add('rdy');
+  await sl(450);if(!ok())return;
+  await mv(918,140,850);if(!ok())return;
+  await click(926,134);
+  $('ttl').textContent='Website redesign';$('ttls').textContent='Studio workspace · Billable';
+  $('start').style.display='none';$('run').style.display='flex';
+  $('time').style.left='368px';$('tsub').style.left='368px';$('tsub').innerHTML='<span class="dot"></span>Timer running';
+  $('empty').style.opacity=0;$('tbl').style.opacity=1;setTimeout(()=>$('row').classList.add('on'),150);
+  $('n1').textContent='Across 1 entry';$('n2').textContent='1 active project';$('n3').textContent='100% of tracked time';$('fs').textContent='All changes saved';
+  cur.style.transitionDuration='900ms';cur.style.transform='translate(960px,200px)';
+  let s=0;
+  tick=setInterval(()=>{if(!ok()){clearInterval(tick);return}
+    s++;$('time').textContent=fmt(s);const t=s+'s';
+    ['v1','v2','v3'].forEach(i=>$(i).textContent=t);$('dur').textContent=t;$('tot').innerHTML='Today’s total &nbsp; '+t;
+    if(s===12)cur.style.opacity=0;},1000);
+}
+$('re').onclick=play;play();
+</script>
+</body>
+</html>
